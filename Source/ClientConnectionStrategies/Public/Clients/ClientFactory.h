@@ -17,17 +17,23 @@ class CLIENTCONNECTIONSTRATEGIES_API UClientFactory : public UObject
 
 public:
     UFUNCTION(BlueprintCallable, Category = "UClientFactory")
-    class UHttpClient* CreateHttpClient(UObject* Owner, UPARAM(ref) EClientLabels& Label);
+    FORCEINLINE class UHttpClient* CreateHttpClient(UObject* Owner, UPARAM(ref) EClientLabels& Label);
 
     UFUNCTION(BlueprintCallable, Category = "UClientFactory")
-    class UWsClient* CreateWsClient(UObject* Owner, UPARAM(ref) EClientLabels& Label);
+    FORCEINLINE class UWsClient* CreateWsClient(UObject* Owner, UPARAM(ref) EClientLabels& Label);
 
     UFUNCTION(BlueprintCallable, Category = "UClientFactory")
-    class UUdpClient* CreateUdpClient(UObject* Owner, UPARAM(ref) EClientLabels& Label);
+    FORCEINLINE class UUdpClient* CreateUdpClient(UObject* Owner, UPARAM(ref) EClientLabels& Label);
 
     UFUNCTION(BlueprintCallable, Category = "UClientFactory")
-    class UTcpClient* CreateTcpClient(UObject* Owner, UPARAM(ref) EClientLabels& Label);
+    FORCEINLINE class UTcpClient* CreateTcpClient(UObject* Owner, UPARAM(ref) EClientLabels& Label);
 
     UFUNCTION(BlueprintCallable, Category = "UClientFactory")
     UObject* CreateByTarget(EClientLabels Target, UObject* Owner, UPARAM(ref) EClientLabels& Label);
+
+private:
+    UObject* DefaultFactoryBehaviour(UObject* Owner, EClientLabels& Label);
+    
+    template <typename T>
+    T* CreateClient(EClientLabels Target, FName Name, UObject* Owner, EClientLabels& Label);
 };
