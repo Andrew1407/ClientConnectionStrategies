@@ -1,0 +1,18 @@
+{
+  "name": "testserversapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node .",
+    "test": "node test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dgram": "^1.0.1",
+    "ws": "^8.13.0"
+  }
+}
