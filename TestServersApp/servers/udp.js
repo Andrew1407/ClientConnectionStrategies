@@ -6,8 +6,8 @@ export default function createSever(port, host, onData) {
   server.on('message', (data, remote) => {
     const heartbeatCheck = heartbeatCommands.includes(data.toString().toLowerCase());
     if (heartbeatCheck) {
-      const alveMessage = 'OK';
-      server.send(alveMessage, remote.port, remote.address);
+      const aliveMessage = 'OK';
+      server.send(aliveMessage, remote.port, remote.address);
     } else {
       const result = onData(JSON.parse(data));
       server.send(JSON.stringify({ result }), remote.port, remote.address);
