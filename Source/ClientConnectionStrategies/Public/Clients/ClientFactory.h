@@ -16,6 +16,9 @@ class CLIENTCONNECTIONSTRATEGIES_API UClientFactory : public UObject
     GENERATED_BODY()
 
 public:
+    template <typename T>
+    T* CreateClient(EClientLabels Target, FName Name, UObject* Owner, EClientLabels& Label);
+
     UFUNCTION(BlueprintCallable, Category = "UClientFactory")
     FORCEINLINE class UHttpClient* CreateHttpClient(UObject* Owner, UPARAM(ref) EClientLabels& Label);
 
@@ -33,7 +36,4 @@ public:
 
 private:
     UObject* DefaultFactoryBehaviour(UObject* Owner, EClientLabels& Label);
-    
-    template <typename T>
-    T* CreateClient(EClientLabels Target, FName Name, UObject* Owner, EClientLabels& Label);
 };

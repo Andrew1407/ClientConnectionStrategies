@@ -1,0 +1,5 @@
+# Client Connection Strategies
+
+This Unreal Engine plugin implements **[HTTP](./Source/ClientConnectionStrategies/Public/Clients/Strategies/HttpClient.h)**, **[WS](./Source/ClientConnectionStrategies/Public/Clients/Strategies/WsClient.h)**, **[UDP](./Source/ClientConnectionStrategies/Public/Clients/Strategies/UdpClient.h)** and **[TCP](./Source/ClientConnectionStrategies/Public/Clients/Strategies/TcpClient.h)** clients to handle exchange problem: clients send JSON **[request](./Source/ClientConnectionStrategies/Public/Clients/DataContainers/RequestData.h)** data containing denomitaions array and amount value to exchange. A **[response](./Source/ClientConnectionStrategies/Public/Clients/DataContainers/ResponseData.h)** is a JSON containig a result value - min denomanations needed to exchange the given value.
+
+There is a **[test server](./TestServersApp/)** which implements the mentioned client strategies using node JS. The app can be **[run](./TestServersApp/index.js)** (servers) and **[tested](./TestServersApp/test.js)** (clients);

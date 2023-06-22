@@ -9,6 +9,14 @@
 #include "Clients/Strategies/UdpClient.h"
 #include "Clients/Strategies/TcpClient.h"
 
+template <typename T>
+T* UClientFactory::CreateClient(EClientLabels Target, FName Name, UObject* Owner, EClientLabels& Label)
+{
+    T* Client = Owner ? NewObject<T>(Owner, Name) : nullptr;
+    Label = Client ? Target : EClientLabels::NONE;
+    return Client;
+}
+
 UHttpClient* UClientFactory::CreateHttpClient(UObject* Owner, EClientLabels& Label)
 {
     return CreateClient<UHttpClient>(EClientLabels::HTTP, TEXT("HttpClient"), Owner, Label);
@@ -45,12 +53,4 @@ UObject* UClientFactory::DefaultFactoryBehaviour(UObject* Owner, EClientLabels& 
 {
     Label = EClientLabels::NONE;
     return nullptr;
-}
-
-template <typename T>
-T* UClientFactory::CreateClient(EClientLabels Target, FName Name, UObject* Owner, EClientLabels& Label)
-{
-    T* Client = Owner ? NewObject<T>(Owner, Name) : nullptr;
-    Label = Client ? Target : EClientLabels::NONE;
-    return Client;
 }
