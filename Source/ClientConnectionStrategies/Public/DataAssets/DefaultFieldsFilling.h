@@ -27,12 +27,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DefaultFieldsFilling")
     int32 Amount;
 
-	UFUNCTION(BlueprintCallable, Category = "DefaultFieldsFilling|Formatters")
-	FORCEINLINE FString PortStr() { return FString::FromInt(Port); }
+	UFUNCTION(BlueprintPure, Category = "DefaultFieldsFilling|Formatters")
+	FORCEINLINE FString PortStr() const { return FString::FromInt(Port); }
 
-	UFUNCTION(BlueprintCallable, Category = "DefaultFieldsFilling|Formatters")
-	FORCEINLINE FString AmountStr() { return FString::FromInt(Amount); }
+	UFUNCTION(BlueprintPure, Category = "DefaultFieldsFilling|Formatters")
+	FORCEINLINE FString AmountStr() const { return FString::FromInt(Amount); }
 
-	UFUNCTION(BlueprintCallable, Category = "DefaultFieldsFilling|Formatters")
-	FString DenominationsStr();
+	UFUNCTION(BlueprintPure, Category = "DefaultFieldsFilling|Formatters")
+	FString DenominationsStr() const;
 };
