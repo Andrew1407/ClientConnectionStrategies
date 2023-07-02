@@ -5,7 +5,7 @@ import { Socket } from 'net';
 import dgram from 'dgram';
 import env from './env.json' assert { type: 'json' };
 
-const { host, port } = env;
+const { host = 'localhost', port = 8080 } = env;
 
 const expected = {
   http: 3,

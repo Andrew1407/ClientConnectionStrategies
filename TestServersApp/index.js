@@ -1,7 +1,7 @@
 import exchange from './exchange.js';
 import env from './env.json' assert { type: 'json' };
 
-const { host, port, labels } = env;
+const { host = 'localhost', port = 8080, labels = [] } = env;
 const moduleLoaders = labels.map(c => import(`./servers/${c}.js`));
 const loaded = await Promise.allSettled(moduleLoaders);
 const modules = loaded.reduce((acc, m, i) => ({ ...acc, [labels[i]]: m }), {});
