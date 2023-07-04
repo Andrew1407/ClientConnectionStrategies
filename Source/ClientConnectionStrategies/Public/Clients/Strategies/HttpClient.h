@@ -10,7 +10,7 @@
 struct FClientOptions;
 struct FRequestData;
 
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class CLIENTCONNECTIONSTRATEGIES_API UHttpClient : public UObject, public IClient
 {
 	GENERATED_BODY()

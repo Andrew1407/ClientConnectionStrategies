@@ -14,7 +14,7 @@ class FSocket;
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class CLIENTCONNECTIONSTRATEGIES_API UUdpClient : public UObject, public IClient, public IConnection
 {
 	GENERATED_BODY()

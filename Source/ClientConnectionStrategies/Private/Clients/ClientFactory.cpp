@@ -9,32 +9,41 @@
 #include "Clients/Strategies/UdpClient.h"
 #include "Clients/Strategies/TcpClient.h"
 
-template <typename T>
-T* UClientFactory::CreateClient(EClientLabels Target, FName Name, UObject* Owner, EClientLabels& Label)
+UClientFactory::UClientFactory(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-    T* Client = Owner ? NewObject<T>(Owner, Name) : nullptr;
+    HttpInstance = UHttpClient::StaticClass();
+    WsInstance = UWsClient::StaticClass();
+    UdpInstance = UUdpClient::StaticClass();
+    TcpInstance = UTcpClient::StaticClass();
+}
+
+template <typename T>
+T* UClientFactory::CreateClient(EClientLabels Target, UObject* Owner, FName Name, const TSubclassOf<UObject>& InstanceClass, EClientLabels& Label)
+{
+    bool IsArgsValid = Owner && InstanceClass;
+    T* Client = IsArgsValid ? NewObject<T>(Owner, InstanceClass, Name) : nullptr;
     Label = Client ? Target : EClientLabels::NONE;
     return Client;
 }
 
 UHttpClient* UClientFactory::CreateHttpClient(UObject* Owner, EClientLabels& Label)
 {
-    return CreateClient<UHttpClient>(EClientLabels::HTTP, TEXT("HttpClient"), Owner, Label);
+    return CreateClient<UHttpClient>(EClientLabels::HTTP, Owner, TEXT("HttpClient"), HttpInstance, Label);
 }
 
 UWsClient* UClientFactory::CreateWsClient(UObject* Owner, EClientLabels& Label)
 {
-    return CreateClient<UWsClient>(EClientLabels::WS, TEXT("WsClient"), Owner, Label);
+    return CreateClient<UWsClient>(EClientLabels::WS, Owner, TEXT("WsClient"), WsInstance, Label);
 }
 
 UUdpClient* UClientFactory::CreateUdpClient(UObject* Owner, EClientLabels& Label)
 {
-    return CreateClient<UUdpClient>(EClientLabels::UDP, TEXT("UdpClient"), Owner, Label);
+    return CreateClient<UUdpClient>(EClientLabels::UDP, Owner, TEXT("UdpClient"), UdpInstance, Label);
 }
 
 UTcpClient* UClientFactory::CreateTcpClient(UObject* Owner, EClientLabels& Label)
 {
-    return CreateClient<UTcpClient>(EClientLabels::TCP, TEXT("TcpClient"), Owner, Label);
+    return CreateClient<UTcpClient>(EClientLabels::TCP, Owner, TEXT("TcpClient"), TcpInstance, Label);
 }
 
 UObject* UClientFactory::CreateByTarget(EClientLabels Target, UObject* Owner, EClientLabels& Label)
