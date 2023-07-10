@@ -3,9 +3,10 @@ import assert from 'node:assert';
 import { WebSocket } from 'ws';
 import { Socket } from 'net';
 import dgram from 'dgram';
-import env from './env.json' assert { type: 'json' };
+import { onData, getStrategies } from './strategies.js';
 
-const { host = 'localhost', port = 8080 } = env;
+const HOST = 'localhost';
+const PORT = 8080;
 
 const expected = {
   http: 3,
@@ -29,37 +30,61 @@ const fetchers = {
   //   return result;
   // },
   http : async (params, i) => {
-    const url = `http://${host}:${port + i}/`;
+    const url = `http://${HOST}:${PORT + i}/`;
     const body = JSON.stringify(params);
     const res = await fetch(url, { method: 'POST', body });
     const { result } = await res.json();
     return result;
   },
   ws: (params, i) => new Promise(res => {
-    const client = new WebSocket(`ws://${host}:${port + i}/`);
+    const client = new WebSocket(`ws://${HOST}:${PORT + i}/`);
     client.onmessage = e => res(JSON.parse(e.data).result);
     client.onopen = () => client.send(JSON.stringify(params), () => client.close());
   }),
   udp: (params, i) => new Promise(res => {
     const client = dgram.createSocket({ type: 'udp4' });
     client.on('message', data => (client.close(), res(JSON.parse(data).result)));
-    client.send(JSON.stringify(params), port + i, host);
+    client.send(JSON.stringify(params), PORT + i, HOST);
   }),
   tcp: (params, i) => new Promise(res =>{
     const client = new Socket();
     client.on('data', data => (client.destroy(), res(JSON.parse(data).result)));
-    client.connect(port + i, host, () => client.write(JSON.stringify(params)));
+    client.connect(PORT + i, HOST, () => client.write(JSON.stringify(params)));
   }),
 };
 
-test('clinets correct respnse message', async t => {
-  await Promise.all(Object.entries(params).map(async ([ key, args ], i) => {
-    if (key in fetchers) params[key].result = await fetchers[key](args, i);
-  }));
 
-  console.table(params);
+test('clinets correct respnse message', async t => {
+  const strategies = await getStrategies({
+    host: HOST,
+    port: PORT,
+    labels: Object.keys(params),
+    onData,
+  });
+  const runTests = async () => {
+    await Promise.all(Object.entries(params).map(async ([ key, args ], i) => {
+      if (key in fetchers) params[key].result = await fetchers[key](args, i);
+    }));
+    console.table(params);
+    await Promise.all(Object.keys(params).map(key =>
+      t.test(`${key} client result check`, () => assert.equal(expected[key], params[key].result))
+    ));
+    await strategies.close();
+  };
+
+  const timeoutLimit = () => new Promise((res, rej) => {
+    const timeout = 3000;
+    setTimeout(async () => {
+      await strategies.close();
+      assert.fail(new Error('Requests timeout reached'));
+    }, timeout);
+  });
   
-  await Promise.all(Object.keys(params).map(key =>
-    t.test(`${key} client result check`, () => assert.equal(expected[key], params[key].result))
-  ));
+  await Promise.race([runTests(), timeoutLimit()]);
 });
+
+setTimeout(() => {
+  console.error(new Error('Max test duretion reached'));
+  process.exit(1)
+}, 10_000).unref();
+

@@ -1,6 +1,6 @@
 /**
  * Searches min exchange
- * @param {number[]} denominations  available denominations
+ * @param {number[]} denominations - available denominations
  * @param {number} amount - amount to exchange
  * @returns {number} min exchange
 */
