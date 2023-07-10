@@ -1,5 +1,5 @@
-import http from 'http';
-import url from 'url';
+import http from 'node:http';
+import url from 'node:url';
 
 export default function createSever(port, host, onData) {
   const server = http.createServer((req, res) => {

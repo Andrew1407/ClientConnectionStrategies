@@ -7,12 +7,12 @@
 USTRUCT(BlueprintType)
 struct FClientOptions
 {
-    GENERATED_BODY()
+    GENERATED_USTRUCT_BODY()
 
     UPROPERTY(BlueprintReadWrite)
     FString Host;
 
-    UPROPERTY(BlueprintReadWrite)
+    UPROPERTY(BlueprintReadWrite, meta = (ClampMin = 0, UIMin = 0))
     int32 Port;
 
     UPROPERTY(BlueprintReadWrite)

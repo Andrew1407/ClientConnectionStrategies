@@ -5,8 +5,8 @@
 USTRUCT(BlueprintType)
 struct FResponseData
 {
-    GENERATED_BODY()
+    GENERATED_USTRUCT_BODY()
 
-    UPROPERTY(BlueprintReadWrite)
+    UPROPERTY(BlueprintReadWrite, meta = (ClampMin = 0, UIMin = 0))
     int32 Result;
 };

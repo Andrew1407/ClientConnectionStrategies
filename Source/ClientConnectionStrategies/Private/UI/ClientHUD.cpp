@@ -4,7 +4,6 @@
 #include "UI/ClientHUD.h"
 #include "UI/RequestFormWidget.h"
 #include "UI/ClientFormSwitch.h"
-#include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
 
 void AClientHUD::BeginPlay()
@@ -15,8 +14,13 @@ void AClientHUD::BeginPlay()
     CreateSwitchWidget();
     if (IsValid(ClientFormSwitch)) ClientFormSwitch->SetVisibility(ESlateVisibility::Collapsed);
 
-    APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-    if (PlayerController) PlayerController->SetShowMouseCursor(true);
+   ;
+    APlayerController* PlayerController =  GetWorld()->GetFirstPlayerController();
+    if (IsValid(PlayerController))
+    {
+        PlayerController->SetInputMode(FInputModeUIOnly());
+        PlayerController->SetShowMouseCursor(true);
+    }
 }
 
 void AClientHUD::CreateClientWidget()

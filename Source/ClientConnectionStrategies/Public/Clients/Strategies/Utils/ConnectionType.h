@@ -7,7 +7,7 @@
 USTRUCT(BlueprintType)
 struct FConnectionType
 {
-    GENERATED_BODY()
+    GENERATED_USTRUCT_BODY()
 
     UPROPERTY(BlueprintReadWrite)
     FName Name;

@@ -10,7 +10,7 @@ export default function exchange(denominations, amount) {
 
   for (const denomination of denominations)
     for (let j = denomination; j <= amount; ++j)
-    exchanges[j] = Math.min(exchanges[j], exchanges[j - denomination] + 1);
+      exchanges[j] = Math.min(exchanges[j], exchanges[j - denomination] + 1);
 
   return exchanges[amount] === Infinity ? -1 : exchanges[amount];
 };

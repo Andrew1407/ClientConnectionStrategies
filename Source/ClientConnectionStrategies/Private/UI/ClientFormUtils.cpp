@@ -43,11 +43,11 @@ void UClientFormUtils::SetSelectedClient(const TArray<UButton*>& Buttons, AGameM
     const TObjectPtr<UButton>& DisconnectBtn = Buttons[2];
 
     const TMap<UButton*, const FString> ButtonTips {
-        { SendBtn, "Send data via {0} client" },
-        { ConnectBtn, "Connect via {0} client" },
-        { DisconnectBtn, "Disonnect via {0} client" },
+        { SendBtn, TEXT("Send data via {0} client") },
+        { ConnectBtn, TEXT("Connect via {0} client") },
+        { DisconnectBtn, TEXT("Disonnect via {0} client") },
     };
-    for (const auto& Pair : ButtonTips)
+    for (auto& Pair : ButtonTips)
     {
         const auto& Button = Pair.Key;
         bool IsConnectBtn = ConnectBtn == Button;
@@ -62,8 +62,8 @@ void UClientFormUtils::SetSelectedClient(const TArray<UButton*>& Buttons, AGameM
 bool UClientFormUtils::TryParseAddressFields(UEditableTextBox* HostField, UEditableTextBox* PortField, FString& Host, int32& Port)
 {
     bool IsFieldsValid = ValidateFields({
-        { HostField, "^((localhost)|(\\d+\\.){3}\\d+)$" },
-        { PortField, "^\\d+$" },
+        { HostField, TEXT("^((localhost)|(\\d+\\.){3}\\d+)$") },
+        { PortField, TEXT("^\\d+$") },
     });
     if (!IsFieldsValid) return false;
     Host = HostField->GetText().ToString();
@@ -74,8 +74,8 @@ bool UClientFormUtils::TryParseAddressFields(UEditableTextBox* HostField, UEdita
 bool UClientFormUtils::TryParseParamsFields(UEditableTextBox* FirstParamField, UEditableTextBox* SecondParamField, TArray<int32>& Denominations, int32& Amount)
 {
     bool IsFieldsValid = ValidateFields({
-        { FirstParamField, "^\\d+(,\\s?\\d+)*$" },
-        { SecondParamField, "^\\d+$" },
+        { FirstParamField, TEXT("^\\d+(,\\s?\\d+)*$") },
+        { SecondParamField, TEXT("^\\d+$") },
     });
     if (!IsFieldsValid) return false;
     TArray<FString> Substrings;
@@ -86,6 +86,20 @@ bool UClientFormUtils::TryParseParamsFields(UEditableTextBox* FirstParamField, U
     Denominations = DenominationsSet.Array();
     Amount = FCString::Atoi(*SecondParamField->GetText().ToString());
     return true;
+}
+
+FString UClientFormUtils::GetHostCmdArgument()
+{
+    FString Host;
+    FParse::Value(FCommandLine::Get(), TEXT("-host="), Host);
+    return Host;
+}
+
+int32 UClientFormUtils::GetPortCmdArgument()
+{
+    int32 Port = 0;
+    FParse::Value(FCommandLine::Get(), TEXT("-port="), Port);
+    return Port;
 }
 
 void UClientFormUtils::HandleConnectionAction(AGameModeBase* GameMode, const TObjectPtr<UButton>& Button, TFunctionRef<bool(UObject*)> ConnectionCheck)

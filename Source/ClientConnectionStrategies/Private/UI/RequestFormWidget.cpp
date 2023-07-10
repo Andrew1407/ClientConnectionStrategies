@@ -41,30 +41,49 @@ void URequestFormWidget::NativeConstruct()
     if (IsValid(ConnectionTypeSelector))
     {
         ConnectionTypeSelector->OnSelectionChanged.AddDynamic(this, &URequestFormWidget::OnTypeSelect);
+        ConnectionTypeSelector->AddOption(TEXT("NONE"));
         if (IsCollectionValid)
-            for (const auto& Pair : ClientCollection->ClientNames) ConnectionTypeSelector->AddOption(Pair.Key.ToString());
-        else
-            ConnectionTypeSelector->AddOption("NONE");
+        {
+            for (const auto& Pair : ClientCollection->ClientNames)
+            {
+                if (Pair.Value != EClientLabels::NONE)
+                    ConnectionTypeSelector->AddOption(Pair.Key.ToString());
+            }
+        }
         ConnectionTypeSelector->SetSelectedIndex(0);
     }
 
-    const TMap<UEditableTextBox*, TPair<FString, TFunctionRef<FString()>>> FieldParams {
-        {FirstParamField, MakeTuple("Denominations", [&] { return DefaultFieldsFilling->DenominationsStr(); }) },
-        {SecondParamField, MakeTuple("Amount", [&] { return DefaultFieldsFilling->AmountStr(); }) },
-        {HostField, MakeTuple("Host", [&] { return DefaultFieldsFilling->Host; }) },
-        {PortField, MakeTuple("Port", [&] { return DefaultFieldsFilling->PortStr(); }) },
-    };
-
-    for (const auto& Pair : FieldParams)
+    if (IsValid(FirstParamField))
     {
-        if (!IsValid(Pair.Key)) continue;
-        Pair.Key->SetHintText(FText::FromString(Pair.Value.Key));
-        if (IsFillingValid) Pair.Key->SetText(FText::FromString(Pair.Value.Value()));
+        FirstParamField->SetHintText(FText::FromString(TEXT("Denominations")));
+        if (IsFillingValid) FirstParamField->SetText(FText::FromString(DefaultFieldsFilling->DenominationsStr()));
+    }
+
+    if (IsValid(SecondParamField))
+    {
+        SecondParamField->SetHintText(FText::FromString(TEXT("Amount")));
+        if (IsFillingValid) SecondParamField->SetText(FText::FromString(DefaultFieldsFilling->AmountStr()));
+    }
+
+    if (IsValid(HostField))
+    {
+        HostField->SetHintText(FText::FromString(TEXT("Host")));
+        if (IsFillingValid) HostField->SetText(FText::FromString(DefaultFieldsFilling->Host));
+        const FString Host = UClientFormUtils::GetHostCmdArgument();
+        if (!Host.IsEmpty()) HostField->SetText(FText::FromString(Host));
+    }
+
+    if (IsValid(PortField))
+    {
+        PortField->SetHintText(FText::FromString(TEXT("Port")));
+        if (IsFillingValid) PortField->SetText(FText::FromString(DefaultFieldsFilling->PortStr()));
+        const int32 Port = UClientFormUtils::GetPortCmdArgument();
+        if (Port > 0) PortField->SetText(FText::FromString(FString::FromInt(Port)));
     }
 
     if (IsValid(ResultTextBlock))
     {
-        ResultTextBlock->SetText(FText::FromString("Result:"));
+        ResultTextBlock->SetText(FText::FromString(TEXT("Result:")));
         const FColor ResultColor = IsCollectionValid ? ClientCollection->DefaultColor : FColor::White;
         ResultTextBlock->SetColorAndOpacity(ResultColor);
     }
@@ -137,7 +156,7 @@ void URequestFormWidget::OnResponse(const FResponseData& ResponseData, bool bSuc
     bool IsCollectionValid = ClientCollection && ClientCollection->IsValidLowLevel();
     if (!bSuccess)
     {
-        ResultTextBlock->SetText(FText::FromString("Result: NaN"));
+        ResultTextBlock->SetText(FText::FromString(TEXT("Result: NaN")));
         const FColor ErrorColor = IsCollectionValid ? ClientCollection->ErrorColor : FColor::Red;
         ResultTextBlock->SetColorAndOpacity(ErrorColor);
         return SendBtn->SetIsEnabled(true);
@@ -180,16 +199,17 @@ void URequestFormWidget::OnDisconnect(EClientLabels Type, bool bSuccess)
 void URequestFormWidget::OnTypeSelect(FString SelectedItem, ESelectInfo::Type SelectionType)
 {
     bool IsCollectionValid = ClientCollection && ClientCollection->IsValidLowLevel();
-    if (!IsCollectionValid) return;
-    const EClientLabels* LabelToSelectPtr = ClientCollection->ClientNames.Find(*SelectedItem);
     AGameModeBase* GameMode = GetGameMode();
-    bool IsDataValid = LabelToSelectPtr && IsValid(GameMode);
-    if (!IsDataValid) return;
-    for (const auto& Button : { SendBtn, ConnectBtn, DisconnectBtn })
-        Button->SetVisibility(ESlateVisibility::Collapsed);
+    if (!(IsCollectionValid && IsValid(GameMode))) return;
+    for (auto& Button : { SendBtn, ConnectBtn, DisconnectBtn }) Button->SetVisibility(ESlateVisibility::Collapsed);
     UObject* PreviousClient = IClientContainer::Execute_GetClient(GameMode);
     bool IsPrevConnection = UKismetSystemLibrary::DoesImplementInterface(PreviousClient, UConnection::StaticClass());
-    const TFunctionRef<void()> SetSelected = [&] { SetSelectedClient(GameMode, *LabelToSelectPtr, SelectedItem); };
+    const EClientLabels* LabelToSelectPtr = ClientCollection->ClientNames.Find(*SelectedItem);
+    EClientLabels LabelToSelect = LabelToSelectPtr ? *LabelToSelectPtr : EClientLabels::NONE;
+    const TFunctionRef<void()> SetSelected = [this, GameMode, LabelToSelect, SelectedItem = MoveTemp(SelectedItem)]
+    {
+        SetSelectedClient(GameMode, LabelToSelect, SelectedItem);
+    };
     if (!IsPrevConnection) return SetSelected();
     FConnectionDelegate DisconnectionDelegate;
     DisconnectionDelegate.BindDynamic(this, &URequestFormWidget::OnDisconnect);
@@ -208,7 +228,7 @@ AGameModeBase* URequestFormWidget::GetGameMode()
 void URequestFormWidget::SetSelectedClient(AGameModeBase* GameMode, EClientLabels SelectedType, const FString SelectedOption)
 {
     FResponseDeledate ResponseDeledate;
-    ResponseDeledate.BindUFunction(this, GET_FUNCTION_NAME_CHECKED(URequestFormWidget, OnResponse));
+    ResponseDeledate.BindDynamic(this, &URequestFormWidget::OnResponse);
     const TArray<UButton*> Buttons { SendBtn.Get(), ConnectBtn.Get(), DisconnectBtn.Get() };
     UClientFormUtils::SetSelectedClient(Buttons, GameMode, SelectedType, SelectedOption, ResponseDeledate);
 }

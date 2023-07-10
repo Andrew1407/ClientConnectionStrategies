@@ -1,4 +1,4 @@
-import net from 'net';
+import net from 'node:net';
 
 export default function createSever(port, host, onData) {
   const server = net.createServer(async socket => {

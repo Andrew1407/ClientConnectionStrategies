@@ -5,11 +5,11 @@
 USTRUCT(BlueprintType)
 struct FRequestData
 {
-    GENERATED_BODY()
+    GENERATED_USTRUCT_BODY()
 
     UPROPERTY(BlueprintReadWrite)
     TArray<int32> Denominations;
 
-    UPROPERTY(BlueprintReadWrite)
+    UPROPERTY(BlueprintReadWrite, meta = (ClampMin = 0, UIMin = 0))
     int32 Amount;
 };

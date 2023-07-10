@@ -34,5 +34,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category="ClientFormUtils")
 	static bool TryParseParamsFields(UEditableTextBox* FirstParamField, UEditableTextBox* SecondParamField, TArray<int32>& Denominations, int32& Amount);
 
+	UFUNCTION(BlueprintPure, Category="ClientFormUtils")
+	static FString GetHostCmdArgument();
+
+	UFUNCTION(BlueprintPure, Category="ClientFormUtils")
+	static int32 GetPortCmdArgument();
+
 	static void HandleConnectionAction(AGameModeBase* GameMode, const TObjectPtr<UButton>& Button, TFunctionRef<bool(UObject*)> ConnectionCheck);
 };
