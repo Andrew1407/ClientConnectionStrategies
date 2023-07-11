@@ -13,10 +13,7 @@ void AClientHUD::BeginPlay()
     CreateClientWidget();
     CreateSwitchWidget();
     if (IsValid(ClientFormSwitch)) ClientFormSwitch->SetVisibility(ESlateVisibility::Collapsed);
-
-   ;
-    APlayerController* PlayerController =  GetWorld()->GetFirstPlayerController();
-    if (IsValid(PlayerController))
+    if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
     {
         PlayerController->SetInputMode(FInputModeUIOnly());
         PlayerController->SetShowMouseCursor(true);
@@ -50,4 +47,3 @@ void AClientHUD::HideForm_Implementation()
     ClientRequestWidget->SetVisibility(ESlateVisibility::Collapsed);
     ClientFormSwitch->SetVisibility(ESlateVisibility::Visible);
 }
-
