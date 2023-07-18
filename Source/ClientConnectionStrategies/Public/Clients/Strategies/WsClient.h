@@ -7,9 +7,9 @@
 #include "Clients/Interfaces/Connection.h"
 #include "Clients/Interfaces/Client.h"
 #include "clients/ClientLabels.h"
+#include "Clients/Strategies/Utils/ClientOptions.h"
 #include "WsClient.generated.h"
 
-struct FClientOptions;
 class IWebSocket;
 /**
  * 

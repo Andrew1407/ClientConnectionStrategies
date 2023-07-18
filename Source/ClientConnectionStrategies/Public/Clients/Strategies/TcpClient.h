@@ -6,10 +6,10 @@
 #include "UObject/NoExportTypes.h"
 #include "Clients/Interfaces/Connection.h"
 #include "Clients/Interfaces/Client.h"
+#include "Clients/Strategies/Utils/ClientOptions.h"
+#include "Clients/Strategies/Utils/ConnectionType.h"
 #include "TcpClient.generated.h"
 
-struct FConnectionType;
-struct FClientOptions;
 class FSocket;
 /**
  * 

@@ -5,10 +5,9 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Clients/Interfaces/Client.h"
+#include "Clients/Strategies/Utils/ClientOptions.h"
+#include "Clients/DataContainers/RequestData.h"
 #include "HttpClient.generated.h"
-
-struct FClientOptions;
-struct FRequestData;
 
 UCLASS(BlueprintType, Blueprintable)
 class CLIENTCONNECTIONSTRATEGIES_API UHttpClient : public UObject, public IClient
