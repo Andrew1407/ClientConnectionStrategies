@@ -22,7 +22,7 @@ class CLIENTCONNECTIONSTRATEGIES_API UTcpClient : public UObject, public IClient
 public:
 	UTcpClient(const FObjectInitializer& ObjectInitializer);
 
-	FORCEINLINE virtual void SetResponseDelegate_Implementation(const FResponseDeledate& ResponseDelegate);
+	FORCEINLINE virtual void SetResponseDelegate_Implementation(const FResponseDelegate& ResponseDelegate);
 	virtual void SetAddress_Implementation(const FString& Host, const int32& Port);
 	virtual void Send_Implementation(const FRequestData& RequestData);
 

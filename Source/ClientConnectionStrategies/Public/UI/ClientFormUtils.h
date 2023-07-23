@@ -26,7 +26,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="ClientFormUtils")
 	static void SetSelectedClient(const TArray<UButton*>& Buttons, AGameModeBase* GameMode,
-    	EClientLabels SelectedType, const FString& SelectedOption, const FResponseDeledate& ResponseDeledate);
+    	EClientLabels SelectedType, const FString& SelectedOption, const FResponseDelegate& ResponseDelegate);
 
 	UFUNCTION(BlueprintCallable, Category="ClientFormUtils")
 	static bool TryParseAddressFields(UEditableTextBox* HostField, UEditableTextBox* PortField, FString& Host, int32& Port);

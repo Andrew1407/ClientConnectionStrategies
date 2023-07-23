@@ -29,14 +29,14 @@ void UWsClient::SetAddress_Implementation(const FString& Host, const int32& Port
     ClientOptions.Port = Port;
 }
 
-void UWsClient::SetResponseDelegate_Implementation(const FResponseDeledate& ResponseDelegate)
+void UWsClient::SetResponseDelegate_Implementation(const FResponseDelegate& ResponseDelegate)
 {
-    ClientOptions.ResponseDeledate = ResponseDelegate;
+    ClientOptions.ResponseDelegate = ResponseDelegate;
 }
 
 void UWsClient::Send_Implementation(const FRequestData& RequestData)
 {
-    const TFunctionRef<void()> OnFailure = [&] { ClientOptions.ResponseDeledate.ExecuteIfBound({}, false); };
+    const TFunctionRef<void()> OnFailure = [&] { ClientOptions.ResponseDelegate.ExecuteIfBound({}, false); };
     if (!Execute_Connected(this)) return OnFailure();
     FString Content;
     bool IsParsed = FJsonObjectConverter::UStructToJsonObjectString(RequestData, Content);
@@ -68,7 +68,7 @@ void UWsClient::Connect_Implementation(const FConnectionDelegate& ConnectionDele
     {
         FResponseData ResponseData;
         bool IsSuccess = FJsonObjectConverter::JsonObjectStringToUStruct<FResponseData>(Message, &ResponseData, 0, 0);
-        ClientOptions.ResponseDeledate.ExecuteIfBound(ResponseData, IsSuccess);
+        ClientOptions.ResponseDelegate.ExecuteIfBound(ResponseData, IsSuccess);
     });
     Socket->Connect();
     GetWorld()->GetTimerManager().SetTimer(ConnectionTimer, [OnConnect] { OnConnect(false); }, ClientOptions.ResponseTimeout, false);

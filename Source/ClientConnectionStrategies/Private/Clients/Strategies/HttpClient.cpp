@@ -24,16 +24,16 @@ void UHttpClient::SetAddress_Implementation(const FString& Host, const int32& Po
     ClientOptions.Port = Port;
 }
 
-void UHttpClient::SetResponseDelegate_Implementation(const FResponseDeledate& ResponseDelegate)
+void UHttpClient::SetResponseDelegate_Implementation(const FResponseDelegate& ResponseDelegate)
 {
-    ClientOptions.ResponseDeledate = ResponseDelegate;
+    ClientOptions.ResponseDelegate = ResponseDelegate;
 }
 
 void UHttpClient::Send_Implementation(const FRequestData& RequestData)
 {
     if (SendMethod == "GET") return GetRequest(RequestData);
     if (SendMethod == "POST") return PostRequest(RequestData);
-    ClientOptions.ResponseDeledate.ExecuteIfBound({}, false);
+    ClientOptions.ResponseDelegate.ExecuteIfBound({}, false);
 }
 
 void UHttpClient::GetRequest(const FRequestData& RequestData)
@@ -53,7 +53,7 @@ void UHttpClient::PostRequest(const FRequestData& RequestData)
 {
     FString Content;
     bool IsParsed = FJsonObjectConverter::UStructToJsonObjectString(RequestData, Content);
-    if (!IsParsed) return (void)ClientOptions.ResponseDeledate.ExecuteIfBound({}, false);
+    if (!IsParsed) return (void)ClientOptions.ResponseDelegate.ExecuteIfBound({}, false);
     TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
     HttpRequest->SetVerb("POST");
     HttpRequest->SetHeader("Content-Type", "application/json");
@@ -72,6 +72,6 @@ void UHttpClient::BindResponseHandler(const TSharedRef<IHttpRequest>& HttpReques
         bool IsSuccess = bWasSuccessful && Response.IsValid();
         if (IsSuccess)
             IsSuccess = FJsonObjectConverter::JsonObjectStringToUStruct<FResponseData>(Response->GetContentAsString(), &ResponseData, 0, 0);
-        ClientOptions.ResponseDeledate.ExecuteIfBound(ResponseData, IsSuccess);
+        ClientOptions.ResponseDelegate.ExecuteIfBound(ResponseData, IsSuccess);
     });
 }

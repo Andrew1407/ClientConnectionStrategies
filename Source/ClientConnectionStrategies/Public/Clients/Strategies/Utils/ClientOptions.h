@@ -16,7 +16,7 @@ struct FClientOptions
     int32 Port;
 
     UPROPERTY(BlueprintReadWrite)
-    FResponseDeledate ResponseDeledate;
+    FResponseDelegate ResponseDelegate;
 
     UPROPERTY(BlueprintReadWrite)
     float ResponseTimeout;

@@ -5,46 +5,35 @@
 #include "CoreMinimal.h"
 #include "Clients/Strategies/UdpClient.h"
 #include "Clients/DataContainers/ResponseData.h"
+#include "Clients/Strategies/Test/ClientTestData.h"
 #include "UdpTestClient.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CLIENTCONNECTIONSTRATEGIES_API UUdpTestClient : public UUdpClient
+class CLIENTCONNECTIONSTRATEGIES_API UUdpTestClient : public UUdpClient, public ConnectionTestData
 {
 	GENERATED_BODY()
 
 public:
-	FORCEINLINE virtual void SetResponseDelegate_Implementation(const FResponseDeledate& ResponseDelegate) override;
-	FORCEINLINE virtual void Send_Implementation(const FRequestData& RequestData) override;
-	virtual void SetAddress_Implementation(const FString& Host, const int32& Port) override;
+	FORCEINLINE virtual void SetResponseDelegate_Implementation(const FResponseDelegate& ResponseDelegate) override { OnResponse = ResponseDelegate; }
+	FORCEINLINE virtual void Send_Implementation(const FRequestData& RequestData) override { OnResponse.ExecuteIfBound(ResponseData, ResponseStatus); }
+	virtual void SetAddress_Implementation(const FString& Host, const int32& Port) override
+	{
+		HostParam = Host;
+		PortParam = Port;
+	}
 
-	FORCEINLINE virtual bool Connected_Implementation() override { return ConnectioneState; }
-	virtual void Connect_Implementation(const FConnectionDelegate& ConnectionDelegate) override;
-	virtual void Disconnect_Implementation(const FConnectionDelegate& DisconnectionDelegate) override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	bool ResponseStatus = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	bool ConnectioneState = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	bool ConnectioneStatus = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	bool DisonnectioneStatus = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	FResponseDeledate OnResponse;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	FResponseData ResponseData;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	FString HostParam;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	int32 PortParam;
+	FORCEINLINE virtual bool Connected_Implementation() override { return ConnectionState; }
+	virtual void Connect_Implementation(const FConnectionDelegate& ConnectionDelegate) override
+	{
+		ConnectionDelegate.ExecuteIfBound(EClientLabels::UDP, ConnectionStatus);
+		ConnectionState = true;
+	}
+	virtual void Disconnect_Implementation(const FConnectionDelegate& DisconnectionDelegate) override
+	{
+		DisconnectionDelegate.ExecuteIfBound(EClientLabels::UDP, ConnectionStatus);
+		ConnectionState = false;
+	}
 };

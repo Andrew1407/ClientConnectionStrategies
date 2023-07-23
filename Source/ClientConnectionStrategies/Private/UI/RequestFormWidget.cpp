@@ -227,10 +227,10 @@ AGameModeBase* URequestFormWidget::GetGameMode()
 
 void URequestFormWidget::SetSelectedClient(AGameModeBase* GameMode, EClientLabels SelectedType, const FString SelectedOption)
 {
-    FResponseDeledate ResponseDeledate;
-    ResponseDeledate.BindDynamic(this, &URequestFormWidget::OnResponse);
+    FResponseDelegate ResponseDelegate;
+    ResponseDelegate.BindDynamic(this, &URequestFormWidget::OnResponse);
     const TArray<UButton*> Buttons { SendBtn.Get(), ConnectBtn.Get(), DisconnectBtn.Get() };
-    UClientFormUtils::SetSelectedClient(Buttons, GameMode, SelectedType, SelectedOption, ResponseDeledate);
+    UClientFormUtils::SetSelectedClient(Buttons, GameMode, SelectedType, SelectedOption, ResponseDelegate);
 }
 
 bool URequestFormWidget::SetClientAddress(UObject* Client)

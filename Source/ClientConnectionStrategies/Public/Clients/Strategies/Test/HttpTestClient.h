@@ -5,33 +5,23 @@
 #include "CoreMinimal.h"
 #include "Clients/Strategies/HttpClient.h"
 #include "Clients/DataContainers/ResponseData.h"
+#include "Clients/Strategies/Test/ClientTestData.h"
 #include "HttpTestClient.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CLIENTCONNECTIONSTRATEGIES_API UHttpTestClient : public UHttpClient
+class CLIENTCONNECTIONSTRATEGIES_API UHttpTestClient : public UHttpClient, public ClientTestData
 {
 	GENERATED_BODY()
 
 public:
-	FORCEINLINE virtual void SetResponseDelegate_Implementation(const FResponseDeledate& ResponseDelegate) override;
-	FORCEINLINE virtual void Send_Implementation(const FRequestData& RequestData) override;
-	virtual void SetAddress_Implementation(const FString& Host, const int32& Port) override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	bool ResponseStatus = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	FResponseDeledate OnResponse;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	FResponseData ResponseData;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	FString HostParam;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestData")
-	int32 PortParam;
+	FORCEINLINE virtual void SetResponseDelegate_Implementation(const FResponseDelegate& ResponseDelegate) override { OnResponse = ResponseDelegate; }
+	FORCEINLINE virtual void Send_Implementation(const FRequestData& RequestData) override { OnResponse.ExecuteIfBound(ResponseData, ResponseStatus); }
+	virtual void SetAddress_Implementation(const FString& Host, const int32& Port) override
+	{
+		HostParam = Host;
+		PortParam = Port;
+	}
 };

@@ -34,9 +34,9 @@ void UTcpClient::SetAddress_Implementation(const FString& Host, const int32& Por
     ClientOptions.Port = Port;
 }
 
-void UTcpClient::SetResponseDelegate_Implementation(const FResponseDeledate& ResponseDelegate)
+void UTcpClient::SetResponseDelegate_Implementation(const FResponseDelegate& ResponseDelegate)
 {
-    ClientOptions.ResponseDeledate = ResponseDelegate;
+    ClientOptions.ResponseDelegate = ResponseDelegate;
 }
 
 bool UTcpClient::Connected_Implementation()
@@ -46,7 +46,7 @@ bool UTcpClient::Connected_Implementation()
 
 void UTcpClient::Send_Implementation(const FRequestData& RequestData)
 {
-    const TFunctionRef<void()> OnFailure = [&] { ClientOptions.ResponseDeledate.ExecuteIfBound({}, false); };
+    const TFunctionRef<void()> OnFailure = [&] { ClientOptions.ResponseDelegate.ExecuteIfBound({}, false); };
     if (!Execute_Connected(this)) return OnFailure();
     TArray<uint8> MessageArray;
     FString Content;
@@ -60,7 +60,7 @@ void UTcpClient::Send_Implementation(const FRequestData& RequestData)
         {
             FResponseData ResponseData;
             bool IsSuccess = FJsonObjectConverter::JsonObjectStringToUStruct<FResponseData>(Message, &ResponseData, 0, 0);
-            ClientOptions.ResponseDeledate.ExecuteIfBound(ResponseData, IsSuccess);
+            ClientOptions.ResponseDelegate.ExecuteIfBound(ResponseData, IsSuccess);
         });
     });
 }

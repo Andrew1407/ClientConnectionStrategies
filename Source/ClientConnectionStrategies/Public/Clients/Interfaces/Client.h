@@ -6,7 +6,7 @@
 #include "UObject/Interface.h"
 #include "Client.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FResponseDeledate, const struct FResponseData&, ResponseData, bool, bSuccess);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FResponseDelegate, const struct FResponseData&, ResponseData, bool, bSuccess);
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
@@ -28,7 +28,7 @@ public:
 	void SetAddress(const FString& Host, const int32& Port);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "IClient")
-	void SetResponseDelegate(const FResponseDeledate& ResponseDelegate);
+	void SetResponseDelegate(const FResponseDelegate& ResponseDelegate);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "IClient")
 	void Send(const struct FRequestData& RequestData);

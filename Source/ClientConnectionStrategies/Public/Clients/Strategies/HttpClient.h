@@ -23,7 +23,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "HttpClient|Requests")
 	void PostRequest(const FRequestData& RequestData);
 
-	FORCEINLINE virtual void SetResponseDelegate_Implementation(const FResponseDeledate& ResponseDelegate);
+	FORCEINLINE virtual void SetResponseDelegate_Implementation(const FResponseDelegate& ResponseDelegate);
 	virtual void SetAddress_Implementation(const FString& Host, const int32& Port); 
 	virtual void Send_Implementation(const FRequestData& RequestData);
 

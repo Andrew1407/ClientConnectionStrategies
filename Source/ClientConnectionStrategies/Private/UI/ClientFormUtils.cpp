@@ -27,14 +27,14 @@ bool UClientFormUtils::ValidateFields(const TMap<UEditableTextBox*, FString>& Fi
 }
 
 void UClientFormUtils::SetSelectedClient(const TArray<UButton*>& Buttons, AGameModeBase* GameMode,
-    EClientLabels SelectedType, const FString& SelectedOption, const FResponseDeledate& ResponseDeledate)
+    EClientLabels SelectedType, const FString& SelectedOption, const FResponseDelegate& ResponseDelegate)
 {
     if (!IClientContainer::Execute_SetClient(GameMode, SelectedType)) return;
     UObject* Client = IClientContainer::Execute_GetClient(GameMode);
     bool IsClient = UKismetSystemLibrary::DoesImplementInterface(Client, UClient::StaticClass());
     if (!IsClient) return;
 
-    IClient::Execute_SetResponseDelegate(Client, ResponseDeledate);
+    IClient::Execute_SetResponseDelegate(Client, ResponseDelegate);
 
     bool IsConnection = UKismetSystemLibrary::DoesImplementInterface(Client, UConnection::StaticClass());
     ESlateVisibility BtnVisibility = !IsConnection ? ESlateVisibility::Collapsed : ESlateVisibility::Visible;
